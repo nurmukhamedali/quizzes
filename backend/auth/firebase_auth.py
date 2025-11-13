@@ -1,7 +1,10 @@
 from firebase_admin import auth
 
 def verify_firebase_token(request):
-    """Extract and verify Firebase ID token from Authorization header."""
+    """
+    Extract and verify Firebase ID token from Authorization header.
+    Expected format: Authorization: Bearer <token>
+    """
     auth_header = request.headers.get("Authorization")
     if not auth_header:
         return None, "Missing Authorization header"
