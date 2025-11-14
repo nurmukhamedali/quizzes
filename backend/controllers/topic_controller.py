@@ -16,12 +16,12 @@ class TopicController:
     @staticmethod
     def create(data):
         new_topic = TopicService.create(data, g.user["uid"])
-        return jsonify(new_topic)
+        return jsonify(new_topic), 201
 
     @staticmethod
     def update(topic_id, data):
-        TopicService.update(topic_id, data)
-        return jsonify({"message": f"Topic {topic_id} updated"})
+        updated_topic = TopicService.update(topic_id, data)
+        return jsonify(updated_topic)
 
     @staticmethod
     def delete(topic_id):

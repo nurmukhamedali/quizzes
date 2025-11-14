@@ -15,12 +15,3 @@ def verify_firebase_token(request):
     except Exception as e:
         return None, str(e)
 
-def set_user_role(uid, role):
-    """Assign custom role claim (e.g., admin=True)."""
-    auth.set_custom_user_claims(uid, {role: True})
-    
-    return auth.get_user(uid)
-
-def has_admin_role(uid):
-    claims = auth.get_user(uid).custom_claims
-    return claims.get("admin")

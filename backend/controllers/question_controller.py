@@ -22,8 +22,8 @@ class QuestionController:
         
     @staticmethod
     def update(question_id, data):
-        QuestionService.update(question_id, data)
-        return jsonify({"message": f"Question {question_id} updated"})
+        updated_question = QuestionService.update(question_id, data)
+        return jsonify(updated_question)
 
     @staticmethod
     def delete(question_id):

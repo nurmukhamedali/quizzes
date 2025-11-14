@@ -5,6 +5,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 from datetime import datetime
 
 questions_ref = db.collection("questions")
+topics_ref = db.collection("topics")
 
 class QuestionService:
     @staticmethod
@@ -27,30 +28,66 @@ class QuestionService:
     @staticmethod
     def create(data, user_id):
         QuestionService.validate_business_rules(data)
+
+        topic_id = data["topic_id"]
+
+        # Ensure topic exists
+        topic = topics_ref.document(topic_id).get()
+        if not topic.exists:
+            raise NotFound("Topic not found")
+        
+        # Ensure unique number within this topic
+        QuestionService.ensure_unique_number(topic_id, data["number"])
+
         data.update({
             "createdBy": user_id,
             "createdAt": datetime.now().isoformat()
         })
-        _, ref = questions_ref.add(data)
-        data["id"] = ref.id
-        return data
+
+        ref = questions_ref.document()
+        ref.set(data)
+
+        return {**data, "id": ref.id}
 
     @staticmethod
     def update(question_id, data):
         QuestionService.validate_business_rules(data)
+
+        # Ensure question exists
         ref = questions_ref.document(question_id)
         if not ref.get().exists:
             raise NotFound(description="Question not found")
+        
+        topic_id = data["topic_id"]
+
+        # Ensure topic exists
+        topic = topics_ref.document(topic_id).get()
+        if not topic.exists:
+            raise NotFound("Topic not found")
+        
+        # Ensure unique number (excluding current id)
+        QuestionService.ensure_unique_number(topic_id, data["number"], exclude_id=question_id)
+        
         ref.update(data)
-        return question_id
+
+        return {**data, "id": question_id}
 
     @staticmethod
     def delete(question_id):
         ref = questions_ref.document(question_id)
         if not ref.get().exists:
             raise NotFound(description="Question not found")
+        
         ref.delete()
+
         return question_id
+    
+    @staticmethod
+    def delete_questions_for_topic(topic_id):
+        """Cascade delete when topic is removed."""
+        qs = questions_ref.where("topic_id", "==", topic_id).stream()
+        for q in qs:
+            q.reference.delete()
 
     @staticmethod
     def validate_business_rules(data):
@@ -73,3 +110,18 @@ class QuestionService:
         # Rule 4: checkbox/input must have at least one correct answer
         if q_type in ["checkbox", "input"] and len(correct) < 1:
             raise BadRequest(description=f"{q_type} questions must have at least one correct answer")
+
+    @staticmethod
+    def ensure_unique_number(topic_id, number, exclude_id=None):
+        """Ensure that no other question in this topic has the same number."""
+
+        query = (
+            questions_ref
+            .where("topic_id", "==", topic_id)
+            .where("number", "==", number)
+        )
+
+        for doc in query.stream():
+            if exclude_id and doc.id == exclude_id:
+                continue
+            raise BadRequest(f"Question number '{number}' already exists in this topic.")

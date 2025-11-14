@@ -13,7 +13,7 @@ def require_auth(f):
 
         # Raise a built-in Flask/Werkzeug exception
         if error:
-            return Unauthorized(description=error)  
+            raise Unauthorized(description=error)  
         
         # store the user in flask.g (global request context)
         g.user = user

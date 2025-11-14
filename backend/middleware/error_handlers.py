@@ -51,7 +51,6 @@ def register_error_handlers(app):
     @app.errorhandler(Unauthorized)
     def handle_unauthorized(e):
         return jsonify({
-            "success": False,
             "error": "UNAUTHORIZED",
             "message": e.description or "Authentication required"
         }), 401
@@ -60,7 +59,6 @@ def register_error_handlers(app):
     @app.errorhandler(Forbidden)
     def handle_forbidden(e):
         return jsonify({
-            "success": False,
             "error": "FORBIDDEN",
             "message": e.description or "Permission denied"
         }), 403

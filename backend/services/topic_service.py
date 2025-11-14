@@ -3,6 +3,7 @@
 from config.settings import db
 from werkzeug.exceptions import NotFound
 from datetime import datetime
+from services.question_service import QuestionService
 
 topics_ref = db.collection("topics")
 
@@ -25,22 +26,31 @@ class TopicService:
             "createdBy": user_id,
             "createdAt": datetime.now().isoformat()
         })
-        _, ref = topics_ref.add(data)
-        data["id"] = ref.id
-        return data
+
+        ref = topics_ref.document()  # generate ID first
+        ref.set(data)
+
+        return {**data, "id": ref.id}
 
     @staticmethod
     def update(topic_id, data):
         ref = topics_ref.document(topic_id)
         if not ref.get().exists:
             raise NotFound(description="Topic not found")
+        
         ref.update(data)
-        return topic_id
+
+        return {**data, "id": topic_id}
 
     @staticmethod
     def delete(topic_id):
         ref = topics_ref.document(topic_id)
         if not ref.get().exists:
             raise NotFound(description="Topic not found")
+        
+        # CASCADE DELETE
+        QuestionService.delete_questions_for_topic(topic_id)
+
         ref.delete()
+        
         return topic_id
