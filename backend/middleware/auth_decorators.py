@@ -2,7 +2,7 @@
 
 from functools import wraps
 from flask import request, jsonify, g
-from auth.firebase_auth import verify_firebase_token
+from config.firebase_auth import verify_firebase_token
 from werkzeug.exceptions import Unauthorized, Forbidden
 
 def require_auth(f):

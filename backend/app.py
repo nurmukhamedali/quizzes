@@ -24,9 +24,12 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(admin_bp, url_prefix="/admin")
-    
+
     app.register_blueprint(topic_bp, url_prefix="/topics")
     app.register_blueprint(question_bp, url_prefix="/questions")
+
+    app.register_blueprint(card_bp, url_prefix="/cards")
+
 
     return app
 

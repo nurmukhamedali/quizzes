@@ -2,7 +2,7 @@
 
 from config.settings import db
 from werkzeug.exceptions import NotFound
-from datetime import datetime
+from datetime import datetime, timezone
 from services.question_service import QuestionService
 
 topics_ref = db.collection("topics")
@@ -24,7 +24,7 @@ class TopicService:
     def create(data, user_id):
         data.update({
             "createdBy": user_id,
-            "createdAt": datetime.now().isoformat()
+            "createdAt": datetime.now(timezone.utc).isoformat()
         })
 
         ref = topics_ref.document()  # generate ID first

@@ -26,4 +26,4 @@ class TopicController:
     @staticmethod
     def delete(topic_id):
         TopicService.delete(topic_id)
-        return jsonify({"message": f"Topic {topic_id} deleted"})
+        return jsonify({"deleted": topic_id})

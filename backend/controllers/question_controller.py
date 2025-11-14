@@ -28,4 +28,4 @@ class QuestionController:
     @staticmethod
     def delete(question_id):
         QuestionService.delete(question_id)
-        return jsonify({"message": f"Question {question_id} deleted"})
+        return jsonify({"deleted": question_id})

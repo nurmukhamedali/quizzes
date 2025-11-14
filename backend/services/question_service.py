@@ -2,7 +2,7 @@
 
 from config.settings import db
 from werkzeug.exceptions import BadRequest, NotFound
-from datetime import datetime
+from datetime import datetime, timezone
 
 questions_ref = db.collection("questions")
 topics_ref = db.collection("topics")
@@ -41,7 +41,7 @@ class QuestionService:
 
         data.update({
             "createdBy": user_id,
-            "createdAt": datetime.now().isoformat()
+            "createdAt": datetime.now(timezone.utc).isoformat()
         })
 
         ref = questions_ref.document()

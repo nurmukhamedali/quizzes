@@ -17,7 +17,7 @@ class AdminController:
     @staticmethod
     def delete_user(uid):
         AdminService.delete_user(uid)
-        return jsonify({"message": f"User {uid} deleted successfully"})
+        return jsonify({"deleted": uid})
 
     @staticmethod
     def assign_role(data):
