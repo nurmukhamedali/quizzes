@@ -8,8 +8,21 @@ questions_ref = db.collection("questions")
 
 class QuestionService:
     @staticmethod
-    def list():
-        return [dict(doc.to_dict(), id=doc.id) for doc in questions_ref.stream()]
+    def list(topic_id=None):
+        """List all questions, optionally filter by topic_id"""
+        query = questions_ref
+        if topic_id:
+            query = query.where("topic_id", "==", topic_id)
+
+        return [dict(doc.to_dict(), id=doc.id) for doc in query.stream()]
+    
+    @staticmethod
+    def get(question_id):
+        ref = questions_ref.document(question_id)
+        doc = ref.get()
+        if not doc.exists:
+            raise NotFound(description=f"Question {question_id} not found")
+        return dict(doc.to_dict(), id=doc.id)
 
     @staticmethod
     def create(data, user_id):

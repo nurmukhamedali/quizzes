@@ -14,11 +14,11 @@ def validate_with(schema_class):
         def wrapper(*args, **kwargs):
             # Check content type
             if not request.is_json:
-                return ValidationError({"_schema": ["Content-Type must be application/json"]})
+                raise ValidationError({"_schema": ["Content-Type must be application/json"]})
             
             json_data = request.get_json()
             if not json_data:
-                return ValidationError({"_schema": ["Missing JSON body"]})
+                raise ValidationError({"_schema": ["Missing JSON body"]})
 
             schema = schema_class()
 

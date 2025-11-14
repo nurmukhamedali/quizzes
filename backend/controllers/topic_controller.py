@@ -7,11 +7,16 @@ class TopicController:
     @staticmethod
     def list():
         return jsonify({"topics": TopicService.list()})
+    
+    @staticmethod
+    def get(topic_id):
+        topic = TopicService.get(topic_id)
+        return jsonify(topic)
 
     @staticmethod
     def create(data):
         new_topic = TopicService.create(data, g.user["uid"])
-        return jsonify(new_topic), 201
+        return jsonify(new_topic)
 
     @staticmethod
     def update(topic_id, data):

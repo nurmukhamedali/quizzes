@@ -5,8 +5,14 @@ from services.question_service import QuestionService
 
 class QuestionController:
     @staticmethod
-    def list():
-        return jsonify({"questions": QuestionService.list()})
+    def list(topic_id=None):
+        questions = QuestionService.list(topic_id)
+        return jsonify({"questions": questions})
+    
+    @staticmethod
+    def get(question_id):
+        question = QuestionService.get(question_id)
+        return jsonify(question)
 
     @staticmethod
     def create(data):

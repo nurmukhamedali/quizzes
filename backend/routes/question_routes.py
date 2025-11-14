@@ -10,23 +10,30 @@ question_bp = Blueprint("questions", __name__)
 
 # GET ALL quesions
 @question_bp.route("/", methods=["GET"])
-@require_role("admin")
+@require_auth
 def list_questions():
-        return QuestionController.list()
+        topic_id = request.args.get("topic_id")  # ?topic_id=topic_123
+        return QuestionController.list(topic_id)
+
+# GET question
+@question_bp.route("/<question_id>", methods=["GET"])
+@require_auth
+def get_question(question_id):
+        return QuestionController.get(question_id)
 
 # CREATE question
 @question_bp.route("/", methods=["POST"])
 @require_role("admin")
 @validate_with(QuestionSchema)
 def create_question():
-        return QuestionController.create(request.validated_data)
+        return QuestionController.create(g.validated_data)
 
 # UPDATE question
 @question_bp.route("/<question_id>", methods=["PUT"])
 @require_role("admin")
 @validate_with(QuestionSchema)
 def update_question(question_id):
-        return QuestionController.update(question_id, request.validated_data)
+        return QuestionController.update(question_id, g.validated_data)
 
 # DELETE question
 @question_bp.route("/<question_id>", methods=["DELETE"])
